@@ -37,6 +37,10 @@ class _HomePageState extends State<HomePage> {
                   _homeVM.inLogin.add(null);
                 },
               ),
+              ElevatedButton(
+                onPressed: (() {}),
+                child: Text("Next"),
+              ),
             ],
           ),
         ),
