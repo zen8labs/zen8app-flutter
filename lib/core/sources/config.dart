@@ -2,10 +2,15 @@ enum Env { dev, stg, prod }
 
 class Config {
   String baseUrl;
-  Config({required this.baseUrl});
 
-  factory Config.env(Env env) {
-    switch (env) {
+  Config({
+    required this.baseUrl,
+  });
+
+  static var currentEnv = Env.dev;
+
+  static Config get currentConfig {
+    switch (currentEnv) {
       case Env.dev:
         return dev;
       case Env.stg:
@@ -16,14 +21,14 @@ class Config {
   }
 
   static Config get dev => Config(
-        baseUrl: 'https://dtsmartag.try0.xyz',
+        baseUrl: 'http://myzen8labs.try0.xyz',
       );
 
   static Config get stg => Config(
-        baseUrl: 'https://dtsmartag.try0.xyz',
+        baseUrl: 'http://myzen8labs.try0.xyz',
       );
 
   static Config get prod => Config(
-        baseUrl: 'https://dtsmartag.try0.xyz',
+        baseUrl: 'http://myzen8labs.try0.xyz',
       );
 }

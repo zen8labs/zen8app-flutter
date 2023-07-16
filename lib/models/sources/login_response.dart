@@ -1,12 +1,19 @@
-import 'auth_credential.dart';
+import 'credential.dart';
 import 'user.dart';
 
 class LoginResponse {
-  AuthCredential credential;
+  Credential credential;
   User user;
 
-  LoginResponse(this.credential, this.user);
+  LoginResponse({
+    required this.credential,
+    required this.user,
+  });
 
-  static LoginResponse fromJson(Map<String, dynamic> json) =>
-      LoginResponse(AuthCredential(json["token"], ""), User.fromJson(json));
+  factory LoginResponse.fromJson(Map<String, dynamic> json) {
+    return LoginResponse(
+      credential: Credential.fromJson(json),
+      user: User.fromJson(json["user"]),
+    );
+  }
 }

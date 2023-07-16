@@ -1,64 +1,70 @@
 import 'dart:convert';
-import 'package:zen8app/lib.dart';
+import 'package:dio/dio.dart';
+import 'package:zen8app/utils/utils.dart';
+import 'package:zen8app/models/models.dart';
+import 'package:zen8app/core/core.dart';
+import 'authenticator.dart';
 
 class Session {
-  static Env _currentEnv = Env.dev;
-  static Env get currentEnv => _currentEnv;
-
-  static Config _currentConfig = Config.dev;
-  static Config get currentConfig => _currentConfig;
+  static final publicClient = Dio();
+  static final authClient = Dio();
 
   static User? _currentUser;
   static User? get currentUser => _currentUser;
-
   static bool get isLoggedIn => _currentUser != null;
-
-  static final _logoutEvents = PublishSubject<String?>();
-  static Stream<String?> get logoutEvent => _logoutEvents.stream;
 
   Session._();
 
-  static Future<void> initialize(Env env) async {
-    //setup env, configurations
-    _currentEnv = env;
-    _currentConfig = Config.env(env);
-
+  //Resume session
+  static Future<void> initialize() async {
     //config network
-    Network.config(
-      baseUrl: _currentConfig.baseUrl,
-    );
+    publicClient.options.baseUrl = Config.currentConfig.baseUrl;
+    authClient.options.baseUrl = Config.currentConfig.baseUrl;
 
+    //load previous credentials
     _currentUser = await LocalStore.getValue(
-      LocalStoreKey.loggedInUser,
+      LocalStoreKey.user,
       transform: (value) => User.fromJson(jsonDecode(value)),
     );
 
     final credential = await LocalStore.getValue(
-      LocalStoreKey.authCredential,
-      transform: (value) => AuthCredential.fromJson(jsonDecode(value)),
+      LocalStoreKey.credential,
+      transform: (value) => Credential.fromJson(jsonDecode(value)),
     );
-
     if (credential != null) {
-      Network.setAuthCredential(credential, CommonAuthenticator());
+      authClient.setAuthCredential(
+        credential: credential,
+        authenticator: DefaultAuthenticator(),
+      );
     }
   }
 
-  static Future<void> startAuthenticatedSession(
-      AuthCredential credential, User loggedUser) async {
+  //Start a new session
+  static Future<void> startAuthenticatedSession(LoginResponse response) async {
     await LocalStore.setValue(
-        LocalStoreKey.authCredential, jsonEncode(credential));
+      LocalStoreKey.user,
+      jsonEncode(response.user),
+    );
+    _currentUser = response.user;
+
     await LocalStore.setValue(
-        LocalStoreKey.loggedInUser, jsonEncode(loggedUser));
-    _currentUser = loggedUser;
-    Network.setAuthCredential(credential, CommonAuthenticator());
+      LocalStoreKey.credential,
+      jsonEncode(response.credential),
+    );
+    authClient.setAuthCredential(
+      credential: response.credential,
+      authenticator: DefaultAuthenticator(),
+    );
   }
 
+  //End a session
   static Future<void> endAuthenticatedSession({String? reason}) async {
     await LocalStore.removeMany([
-      LocalStoreKey.authCredential,
-      LocalStoreKey.loggedInUser,
+      LocalStoreKey.credential,
+      LocalStoreKey.user,
     ]);
+
     _currentUser = null;
-    Network.clearAuthCredential();
+    authClient.clearAuthCredential();
   }
 }

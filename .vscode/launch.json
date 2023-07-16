@@ -8,9 +8,8 @@
             "name": "zen8app-dev",
             "request": "launch",
             "type": "dart",
+            "program": "lib/_main/main_dev.dart",
             "args": [
-                "--dart-define",
-                "ENV=dev",
                 "--flavor",
                 "dev"
             ]
@@ -19,9 +18,8 @@
             "name": "zen8app-stg",
             "request": "launch",
             "type": "dart",
+            "program": "lib/_main/main_stg.dart",
             "args": [
-                "--dart-define",
-                "ENV=stg",
                 "--flavor",
                 "stg"
             ]
@@ -30,9 +28,8 @@
             "name": "zen8app-prod",
             "request": "launch",
             "type": "dart",
+            "program": "lib/_main/main_prod.dart",
             "args": [
-                "--dart-define",
-                "ENV=prod",
                 "--flavor",
                 "prod"
             ]

@@ -26,7 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 33
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -37,15 +37,19 @@ android {
         jvmTarget = '1.8'
     }
 
+    lintOptions {
+        checkReleaseBuilds false
+    }
+    
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.zen8labs.flutter"
+        applicationId "com.zen8labs.myzen8labs"
         minSdkVersion 24
-        targetSdkVersion 31
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
     }
@@ -63,19 +67,19 @@ android {
     productFlavors {
         dev {
             dimension "default"
-            resValue "string", "app_name", "Zen8app dev"
+            resValue "string", "app_name", "My Zen8labs dev"
             applicationIdSuffix ".dev"
         }
 
         stg {
             dimension "default"
-            resValue "string", "app_name", "Zen8app stg"
+            resValue "string", "app_name", "My Zen8labs stg"
             applicationIdSuffix ".stg"
         }
 
         prod {
             dimension "default"
-            resValue "string", "app_name", "Zen8app"
+            resValue "string", "app_name", "My Zen8labs"
         }
     }
 }
