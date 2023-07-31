@@ -13,8 +13,8 @@ class DefaultNetworkImage extends StatelessWidget {
     Key? key,
     this.imageUrl,
     this.placeholder = "images/img_placeholder.png",
-    this.width = 56,
-    this.height = 56,
+    this.width,
+    this.height,
     this.radius = 8,
     this.fit = BoxFit.cover,
     this.alignment = Alignment.center,
@@ -38,6 +38,13 @@ class DefaultNetworkImage extends StatelessWidget {
           height: height,
           fit: fit,
           alignment: alignment,
+          errorWidget: (context, url, error) => Image.asset(
+            placeholder,
+            width: width,
+            height: height,
+            fit: fit,
+            alignment: alignment,
+          ),
         ),
       );
     }

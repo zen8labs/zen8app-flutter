@@ -29,7 +29,9 @@ class DefaultAuthenticator extends Authenticator<Credential> {
   Future<Credential> refreshCredential(Credential oldCredential, Dio client) {
     return client.post("/auth/refresh/").then((response) {
       final credential = Credential.fromJson(response.data);
-      LocalStore.setValue(LocalStoreKey.credential, jsonEncode(credential));
+      DI
+          .resolve<LocalStore>()
+          .setValue(LocalStoreKey.credential, jsonEncode(credential));
       return credential;
     }).catchError((e) {
       EventBus.shared

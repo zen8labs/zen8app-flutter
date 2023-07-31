@@ -41,6 +41,8 @@ dependencies:
   cached_network_image: ^3.2.3
   google_fonts: ^5.1.0
   intl: ^0.18.1
+  easy_refresh: ^3.3.2+1
+  group_list_view: ^1.1.1
 
 dev_dependencies:
   flutter_test:

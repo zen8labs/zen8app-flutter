@@ -13,6 +13,8 @@ export 'helpers/ui_utils.dart';
 export 'helpers/extendable.dart';
 export 'helpers/event_bus.dart';
 export 'helpers/mvvm_binding.dart';
+export 'helpers/page_type.dart';
+export 'helpers/page_loader.dart';
 
 export 'extensions/color_ext.dart';
 export 'extensions/date_time_ext.dart';

@@ -21,13 +21,15 @@ class Session {
     publicClient.options.baseUrl = Config.currentConfig.baseUrl;
     authClient.options.baseUrl = Config.currentConfig.baseUrl;
 
+    var store = DI.resolve<LocalStore>();
+
     //load previous credentials
-    _currentUser = await LocalStore.getValue(
+    _currentUser = await store.getValue(
       LocalStoreKey.user,
       transform: (value) => User.fromJson(jsonDecode(value)),
     );
 
-    final credential = await LocalStore.getValue(
+    final credential = await store.getValue(
       LocalStoreKey.credential,
       transform: (value) => Credential.fromJson(jsonDecode(value)),
     );
@@ -41,13 +43,14 @@ class Session {
 
   //Start a new session
   static Future<void> startAuthenticatedSession(LoginResponse response) async {
-    await LocalStore.setValue(
+    var store = DI.resolve<LocalStore>();
+    await store.setValue(
       LocalStoreKey.user,
       jsonEncode(response.user),
     );
     _currentUser = response.user;
 
-    await LocalStore.setValue(
+    await store.setValue(
       LocalStoreKey.credential,
       jsonEncode(response.credential),
     );
@@ -59,7 +62,7 @@ class Session {
 
   //End a session
   static Future<void> endAuthenticatedSession({String? reason}) async {
-    await LocalStore.removeMany([
+    await DI.resolve<LocalStore>().removeMany([
       LocalStoreKey.credential,
       LocalStoreKey.user,
     ]);

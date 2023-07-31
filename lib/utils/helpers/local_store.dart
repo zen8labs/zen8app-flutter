@@ -3,9 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 typedef LocalStoreTransformFunc<T> = T? Function(dynamic value);
 
 class LocalStore {
-  LocalStore._();
-
-  static Future<T?> getValue<T>(
+  Future<T?> getValue<T>(
     String key, {
     T? defaultValue,
     LocalStoreTransformFunc<T>? transform,
@@ -23,7 +21,7 @@ class LocalStore {
     }
   }
 
-  static Future<bool> setValue(String key, dynamic value) async {
+  Future<bool> setValue(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
 
     if (value is bool) {
@@ -50,12 +48,12 @@ class LocalStore {
     return false;
   }
 
-  static Future<bool> remove(String key) async {
+  Future<bool> remove(String key) async {
     final prefs = await SharedPreferences.getInstance();
     return await prefs.remove(key);
   }
 
-  static Future<void> removeMany(Iterable<String> keys) async {
+  Future<void> removeMany(Iterable<String> keys) async {
     final prefs = await SharedPreferences.getInstance();
     for (var aKey in keys) {
       await prefs.remove(aKey);
