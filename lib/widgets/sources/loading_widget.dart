@@ -17,7 +17,7 @@ class RefreshController {
   RefreshController({
     this.triggerAxis = Axis.vertical,
     this.refreshOnStart = false,
-    this.clipBehavior = Clip.none,
+    this.clipBehavior = Clip.hardEdge,
     this.onRefresh,
     this.onLoad,
   });
@@ -87,12 +87,14 @@ class LoadingWidget extends StatefulWidget {
   final RefreshController? refreshController;
 
   final Widget Function(BuildContext context, ScrollPhysics? physics) builder;
+  final Widget? Function(BuildContext context)? emptyStateBuilder;
 
   const LoadingWidget.builder({
     Key? key,
     this.isLoading,
     this.error,
     this.refreshController,
+    this.emptyStateBuilder,
     required this.builder,
   }) : super(key: key);
 
@@ -100,6 +102,7 @@ class LoadingWidget extends StatefulWidget {
     Key? key,
     Stream<bool>? isLoading,
     Stream<AppException>? error,
+    Widget? Function(BuildContext context)? emptyStateBuilder,
     RefreshController? refreshController,
     required Widget child,
   }) : this.builder(
@@ -107,6 +110,7 @@ class LoadingWidget extends StatefulWidget {
           isLoading: isLoading,
           error: error,
           refreshController: refreshController,
+          emptyStateBuilder: emptyStateBuilder,
           builder: (context, physics) => child,
         );
 
@@ -134,7 +138,6 @@ class _LoadingWidgetState extends State<LoadingWidget> {
   @override
   Widget build(BuildContext context) {
     return Stack(
-      // fit: StackFit.expand,
       alignment: Alignment.center,
       children: [
         switch (widget.refreshController) {
@@ -164,10 +167,20 @@ class _LoadingWidgetState extends State<LoadingWidget> {
         StreamBuilder(
           stream: widget.isLoading,
           builder: (context, snapshot) {
-            if (snapshot.data ?? false) {
-              return _loadingIndicator();
-            } else {
-              return const SizedBox.shrink();
+            switch (snapshot.data) {
+              case true:
+                return (widget.refreshController?.onRefresh == null)
+                    ? _loadingIndicator()
+                    : const SizedBox.shrink();
+              case false:
+                if (widget.emptyStateBuilder != null) {
+                  return widget.emptyStateBuilder!(context) ??
+                      const SizedBox.shrink();
+                } else {
+                  return const SizedBox.shrink();
+                }
+              default:
+                return const SizedBox.shrink();
             }
           },
         ),
