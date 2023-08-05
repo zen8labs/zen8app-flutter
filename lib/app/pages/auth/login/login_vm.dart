@@ -12,6 +12,7 @@ class LoginVMInput extends Disposable {
 }
 
 class LoginVMOutput extends Disposable {
+  //output triggers event should be a PublishSubject, but output that's showing on the UI should be a BehaviorSubject
   final response = PublishSubject<LoginResponse>();
 
   @override
@@ -25,7 +26,7 @@ class LoginVM extends BaseVM<LoginVMInput, LoginVMOutput> {
 
   @override
   CompositeSubscription? connect() {
-    final rxBag = CompositeSubscription();
+    final subscription = CompositeSubscription();
     final authService = DI.resolve<AuthService>();
 
     input.login
@@ -34,8 +35,8 @@ class LoginVM extends BaseVM<LoginVMInput, LoginVMOutput> {
             .trackActivity("loading", activityTracker))
         .handleErrorBy(errorTracker)
         .bindTo(output.response)
-        .addTo(rxBag);
+        .addTo(subscription);
 
-    return rxBag;
+    return subscription;
   }
 }

@@ -2,41 +2,47 @@ import 'package:rxdart/rxdart.dart';
 import 'disposable.dart';
 
 class ActivityTracker implements Disposable {
-  BehaviorSubject<Set<String>> _activities = BehaviorSubject.seeded({});
+  final _cache = BehaviorSubject<Map<String, bool>?>.seeded(null);
 
   void start(String activity) {
-    var newActivities = _activities.value;
-    if (newActivities.add(activity) && !_activities.isClosed) {
-      _activities.add(newActivities);
+    var allActivities = _cache.value ?? {};
+    if (!_cache.isClosed && allActivities[activity] != true) {
+      allActivities[activity] = true;
+      _cache.add(allActivities);
     }
   }
 
   void stop(String activity) {
-    var newActivities = _activities.value;
-    if (newActivities.remove(activity) && !_activities.isClosed) {
-      _activities.add(newActivities);
+    var allActivities = _cache.value ?? {};
+    if (!_cache.isClosed && allActivities[activity] != false) {
+      allActivities[activity] = false;
+      _cache.add(allActivities);
     }
   }
 
   Stream<bool> isRunning(String activity) {
-    return _activities
-        .map((activities) => activities.contains(activity))
+    return _cache
+        .mapNotNull((activitiesMap) => activitiesMap?[activity])
         .distinct();
   }
 
   Stream<bool> isRunningAnyOf(Set<String> activities) {
-    return _activities
-        .map((allActivities) =>
-            allActivities.intersection(activities).isNotEmpty)
+    return _cache
+        .whereType<Map<String, bool>>()
+        .map((activitiesMap) =>
+            activities.any((activity) => activitiesMap[activity] ?? false))
         .distinct();
   }
 
   Stream<bool> isRunningAny() {
-    return _activities.map((activities) => activities.isNotEmpty).distinct();
+    return _cache
+        .whereType<Map<String, bool>>()
+        .map((activitiesMap) => activitiesMap.values.contains(true))
+        .distinct();
   }
 
   @override
   void dispose() {
-    _activities.close();
+    _cache.close();
   }
 }

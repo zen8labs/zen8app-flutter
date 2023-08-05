@@ -79,13 +79,13 @@ class PageLoader<Param, Page extends PageType> extends Disposable {
     ).handleErrorBy(errorTracker).bindTo(_cache).addTo(_sub);
   }
 
-  Future<bool> reloadPage(Param param) {
+  Future<bool> refreshPage(Param param) {
     var completer = Completer<bool>();
     if (!_reload.isClosed) _reload.add((completer, param));
     return completer.future;
   }
 
-  Future<bool> nextPage() {
+  Future<bool> loadMorePage() {
     var completer = Completer<bool>();
     if (!_next.isClosed) _next.add(completer);
     return completer.future;
